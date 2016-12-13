@@ -29,5 +29,6 @@ repositories {
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter')
     compile("org.springframework.boot:spring-boot-starter-web:1.4.2.RELEASE")
+    compile 'com.linecorp.bot:line-bot-spring-boot:1.5.0'
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }
