@@ -1,5 +1,11 @@
 package com.playbot;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -20,6 +26,9 @@ import com.linecorp.bot.spring.boot.annotation.LineMessageHandler;
 @EnableAutoConfiguration
 public class PlaybotApplication {
 
+    private int guessCnt = 0;
+    private List<String> secret;
+
     @RequestMapping("/")
     @ResponseBody
     String home() {
@@ -28,14 +37,62 @@ public class PlaybotApplication {
 
     @EventMapping
     public TextMessage handleTextMessageEvent(MessageEvent<TextMessageContent> event) {
-        System.out.println("event: " + event);
-        String reversedText = new StringBuffer(event.getMessage().getText()).reverse().toString();
-        return new TextMessage(reversedText);
+        // System.out.println("event: " + event);
+        // String reversedText = new StringBuffer(event.getMessage().getText()).reverse().toString();
+        // return new TextMessage(reversedText);
+        String res = null;
+        String msg = event.getMessage().getText();
+        if ("go".equalsIgnoreCase(msg)) {
+            newGame();
+            res = "猜數字！(請輸入4位不重複的數字)";
+        }
+        else {
+            guessCnt++;
+            int cntA = 0, cntB = 0;
+            String s;
+            for (int i = 0; i < 4; i++) {
+                s = String.valueOf(msg.charAt(i));
+                if (s.equals(secret.get(i))) {
+                    cntA++;
+                }
+                else if (secret.contains(s)) {
+                    cntB++;
+                }
+            }
+            if (cntA == 4) {
+                res = "第" + guessCnt + "次：狂喔～猜中！";
+                newGame();
+            }
+            else {
+                res = "第" + guessCnt + "次：" + cntA + "A" + cntB + "B";
+            }
+        }
+        return new TextMessage(res);
     }
 
     @EventMapping
     public void handleDefaultMessageEvent(Event event) {
         System.out.println("event: " + event);
+    }
+
+    private void newGame() {
+        guessCnt = 0;
+        secret = randomFourDigi();
+    }
+
+    private List<String> randomFourDigi() {
+        int rdn;
+        Set<String> s = new HashSet<String>(4);
+        Random r = new Random();
+        for (int i = 0; i < 4; i++) {
+            do {
+                rdn = r.nextInt(10);
+            }
+            while (!s.add(String.valueOf(rdn)));
+        }
+        List<String> res = new ArrayList<String>();
+        res.addAll(s);
+        return res;
     }
 
     public static void main(String[] args) {
