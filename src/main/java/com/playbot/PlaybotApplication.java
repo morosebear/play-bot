@@ -60,7 +60,7 @@ public class PlaybotApplication {
                 }
             }
             if (cntA == 4) {
-                res = "第" + guessCnt + "次：狂喔～猜中！";
+                res = "第" + guessCnt + "次：狂喔～猜中惹！(surprise)(surprise)(surprise)";
                 newGame();
             }
             else {
