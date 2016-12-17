@@ -26,27 +26,25 @@ import com.linecorp.bot.spring.boot.annotation.LineMessageHandler;
 @EnableAutoConfiguration
 public class PlaybotApplication {
 
-    private int guessCnt = 0;
     private List<String> secret;
+    private int guessCnt = 0;
+    private StringBuilder guessHis;
 
     @RequestMapping("/")
     @ResponseBody
     String home() {
-        return "play with Line's Messaging API";
+        return "play guess number game with a LINE bot.";
     }
 
     @EventMapping
     public TextMessage handleTextMessageEvent(MessageEvent<TextMessageContent> event) {
-        // System.out.println("event: " + event);
-        // String reversedText = new StringBuffer(event.getMessage().getText()).reverse().toString();
-        // return new TextMessage(reversedText);
         String res = null;
         String msg = event.getMessage().getText();
         if ("go".equalsIgnoreCase(msg)) {
             newGame();
             res = "猜數字！(請輸入4位不重複的數字)";
         }
-        else {
+        else if (msg.matches("\\d{4}")) {
             guessCnt++;
             int cntA = 0, cntB = 0;
             String s;
@@ -60,14 +58,15 @@ public class PlaybotApplication {
                 }
             }
             if (cntA == 4) {
-                res = "第" + guessCnt + "次：狂喔～猜中惹！(surprise)(surprise)(surprise)";
+                res = "第" + guessCnt + "猜：猜中惹 94狂～ (surprise)(surprise)(surprise)";
                 newGame();
             }
             else {
-                res = "第" + guessCnt + "次：" + cntA + "A" + cntB + "B";
+                guessHis = guessHis.append("第" + guessCnt + "猜：" + cntA + "A" + cntB + "B" + System.lineSeparator());
+                res = guessHis.toString();
             }
         }
-        return new TextMessage(res);
+        return (res == null ? null : new TextMessage(res));
     }
 
     @EventMapping
@@ -76,8 +75,9 @@ public class PlaybotApplication {
     }
 
     private void newGame() {
-        guessCnt = 0;
         secret = randomFourDigi();
+        guessCnt = 0;
+        guessHis = new StringBuilder("");
     }
 
     private List<String> randomFourDigi() {
@@ -96,10 +96,6 @@ public class PlaybotApplication {
     }
 
     public static void main(String[] args) {
-        System.setProperty("line.bot.channelToken",
-                "Xsea4Shuu4mppQrCsvygtCfHCXFZOjeHYT7J/mTkxFwmdkoVIM4ZYF5CMZnSP5sX3z6p+a8bjBA0mZ2aMHH2bpWbv5e7sRfOTO1zc9LyzdN/MhU0kaibFb4hGhQJ7npsZIcf8AesPkHCfwhVD8TxsgdB04t89/1O/w1cDnyilFU=");
-        System.setProperty("line.bot.channelSecret", "3ddbaba52ebbc09fa38defac7ef35516");
-
         SpringApplication.run(PlaybotApplication.class, args);
     }
 
