@@ -58,11 +58,11 @@ public class PlaybotApplication {
                 }
             }
             if (cntA == 4) {
-                res = "第" + guessCnt + "猜：猜中惹 94狂～ (surprise)(surprise)(surprise)";
+                res = "第" + guessCnt + "猜 " + msg + "：猜中惹 94狂～ (surprise)(surprise)(surprise)";
                 newGame();
             }
             else {
-                guessHis = guessHis.append("第" + guessCnt + "猜：" + cntA + "A" + cntB + "B" + System.lineSeparator());
+                guessHis = guessHis.append("第" + guessCnt + "猜 " + msg + "：" + cntA + "A" + cntB + "B" + System.lineSeparator());
                 res = guessHis.toString();
             }
         }
